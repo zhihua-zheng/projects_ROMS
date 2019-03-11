@@ -1,0 +1,13 @@
+# Ignore data files
+/small_box/Data/SS1D/
+*.CTD
+*.mat
+*.csv
+*.nc
+*.bot
+*.grd
+
+# Ignore figures
+*.png
+*.pdf
+*.bmp
