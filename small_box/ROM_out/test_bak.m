@@ -1,5 +1,6 @@
 
 clear
+my_root = '~/Documents/GitHub/Rutgers_ROMS/projects_ROMS/small_box';
 
 %%
 
@@ -38,7 +39,6 @@ igrid = 1; % for RHO points
 z_rho = set_depth(Vtransform, Vstretching, theta_s, theta_b, hc, N, ...
                   igrid, h, zeta(:,:,1));
 
-
 %%
 
 temp_ini = temp(:,:,:,1);
@@ -58,7 +58,8 @@ legend({'temp. - initial','temp. - after 15 months'},'Location','east',...
     'FontSize',11,'Interpreter','latex')
 ylim([-300 0])
 
-export_fig('./figs/tprof','-png','-transparent','-painters')
+set(gca,'LooseInset', get(gca,'TightInset')); % no blank edge
+saveas(gcf, './figs/tprof', 'png');
 
 %%
 
@@ -71,5 +72,5 @@ legend({'sal. - initial','sal. - after 15 months'},'Location','best',...
     'FontSize',11,'Interpreter','latex')
 ylim([-300 0])
 
-export_fig('./figs/sprof','-png','-transparent','-painters')
-
+set(gca,'LooseInset', get(gca,'TightInset')); % no blank edge
+saveas(gcf, './figs/sprof', 'png');
