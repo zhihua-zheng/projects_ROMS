@@ -36,7 +36,7 @@ N     = 180;
 igrid = 1; % for RHO points
 
 z_rho = set_depth(Vtransform, Vstretching, theta_s, theta_b, hc, N, ...
-                  igrid, h, zeta);
+                  igrid, h, zeta(:,:,1));
 
 
 %%
@@ -44,4 +44,32 @@ z_rho = set_depth(Vtransform, Vstretching, theta_s, theta_b, hc, N, ...
 temp_ini = temp(:,:,:,1);
 temp_end = temp(:,:,:,end);
 
-plot(squeeze(temp_ini(1,1,:)),z_rho);
+salt_ini = salt(:,:,:,1);
+salt_end = salt(:,:,:,end);
+
+%%
+
+figure('position', [0, 0, 500, 600]);
+plot(squeeze(temp_ini(1,1,:)),squeeze(z_rho(1,1,:)))
+hold on
+plot(squeeze(temp_end(1,1,:)),squeeze(z_rho(1,1,:)))
+hold off
+legend({'temp. - initial','temp. - after 15 months'},'Location','east',...
+    'FontSize',11,'Interpreter','latex')
+ylim([-300 0])
+
+export_fig('./figs/tprof','-png','-transparent','-painters')
+
+%%
+
+figure('position', [0, 0, 500, 600]);
+plot(squeeze(salt_ini(1,1,:)),squeeze(z_rho(1,1,:)))
+hold on
+plot(squeeze(salt_end(1,1,:)),squeeze(z_rho(1,1,:)))
+hold off
+legend({'sal. - initial','sal. - after 15 months'},'Location','best',...
+    'FontSize',11,'Interpreter','latex')
+ylim([-300 0])
+
+export_fig('./figs/sprof','-png','-transparent','-painters')
+
