@@ -11,10 +11,12 @@
 *.png
 *.pdf
 *.bmp
+*.eps
 
 # Ignore temporary build/log files
 /*/Build_roms/
 *.log
+*~
 
 # Ignore excuetable files
 romsM

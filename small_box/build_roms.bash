@@ -227,7 +227,7 @@ fi
 
  export     MY_HEADER_DIR=${MY_PROJECT_DIR}
 
- export MY_ANALYTICAL_DIR=${MY_PROJECT_DIR}
+ export MY_ANALYTICAL_DIR=${MY_PROJECT_DIR}/Functionals
 
 # Put the binary to execute in the following directory.
 

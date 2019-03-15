@@ -8,12 +8,13 @@
 show_fig = 0; % turn on/off figure section
 
 %  Set input/output NetCDF files.
-my_root = '~/Documents/GitHub/Rutgers_ROMS/Projects/small_box';
+my_root = '~/Documents/GitHub/Rutgers_ROMS/projects_ROMS/small_box';
 
 GRDname     = fullfile(my_root, 'Data/grid', 'uniform_grid_50m.nc');
 CLname      = fullfile(my_root, 'Data/CL',   'ocsp_cl_1995_2017.mat');
 LES_INIname = fullfile(my_root, 'Data/SS1D/nps10f192', 'nps10f192MYinit.dat');
-INIname = 'small_box_ini.nc';
+%INIname     = fullfile(my_root, 'small_box_ini.nc');
+INIname     = 'small_box_ini.nc';
 
 %% Box configuration
 

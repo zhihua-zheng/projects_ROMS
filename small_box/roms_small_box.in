@@ -186,7 +186,7 @@ ad_VolCons(north) ==  F                            ! northern boundary
 
 ! Time-Stepping parameters.
 
-      NTIMES == 200640
+      NTIMES == 8640
           DT == 300.0d0
      NDTFAST == 30
 
@@ -212,7 +212,7 @@ ad_VolCons(north) ==  F                            ! northern boundary
         NRST == 288
         NSTA == 1
         NFLT == 1
-       NINFO == 1
+       NINFO == 12
 
 ! Output history, quicksave, average, and diagnostic files parameters.
 
@@ -847,8 +847,8 @@ Dout(iTvdif) == T T     ! temp_vdiff, ...    vertical diffusion
 
 ! Input NetCDF file names, [1:Ngrids].
 
-     GRDNAME == uniform_grid_50m.nc
-     ININAME == small_box_ini.nc
+     GRDNAME == ROMS_in/uniform_grid_50m.nc
+     ININAME == ROMS_in/small_box_ini.nc
      ITLNAME == roms_itl.nc
      IRPNAME == roms_irp.nc
      IADNAME == roms_iad.nc
@@ -908,15 +908,15 @@ Dout(iTvdif) == T T     ! temp_vdiff, ...    vertical diffusion
 
      DAINAME == roms_dai.nc
      GSTNAME == roms_gst.nc
-     RSTNAME == roms_rst.nc
-     HISNAME == roms_his.nc
+     RSTNAME == ROMS_out/roms_rst.nc
+     HISNAME == ROMS_out/roms_his.nc
      QCKNAME == roms_qck.nc
      TLMNAME == roms_tlm.nc
      TLFNAME == roms_tlf.nc
      ADJNAME == roms_adj.nc
-     AVGNAME == roms_avg.nc
+     AVGNAME == ROMS_out/roms_avg.nc
      HARNAME == roms_har.nc
-     DIANAME == roms_dia.nc
+     DIANAME == ROMS_out/roms_dia.nc
      STANAME == roms_sta.nc
      FLTNAME == roms_flt.nc
 
