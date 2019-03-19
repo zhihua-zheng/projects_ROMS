@@ -17,6 +17,7 @@
 /*/Build_roms/
 *.log
 *~
+*.DS_Store
 
 # Ignore excuetable files
 romsM

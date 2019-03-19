@@ -46,7 +46,7 @@
 #define ANA_BTFLUX
 #define ANA_BSFLUX
 
-#define MY25_MIXING
+#define GLS_MIXING
 
 #if defined GLS_MIXING || defined MY25_MIXING
 # define KANTHA_CLAYSON
