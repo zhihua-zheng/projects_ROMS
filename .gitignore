@@ -12,6 +12,8 @@
 *.pdf
 *.bmp
 *.eps
+*.jpeg
+*.jpg
 
 # Ignore temporary build/log files
 /*/Build_roms/
