@@ -218,7 +218,7 @@ ad_VolCons(north) ==  F                            ! northern boundary
 ! Output history, quicksave, average, and diagnostic files parameters.
 
      LDEFOUT == T
-        NHIS == 72
+        NHIS == 12
      NDEFHIS == 0
         NQCK == 0
      NDEFQCK == 0
@@ -374,7 +374,7 @@ LtracerSponge == F F                            ! temperature, salinity, inert
 ! origin for tidal forcing, and model reference time for output
 ! NetCDF units attribute.
 
-      DSTART =  0.0d0                      ! days
+      DSTART = 30.0d0                      ! days
   TIDE_START =  0.0d0                      ! days
     TIME_REF =  0.0d0                      ! yyyymmdd.dd
 
@@ -517,8 +517,8 @@ Hout(idpthU) == F       ! z_u                time-varying depths of U-points
 Hout(idpthV) == F       ! z_v                time-varying depths of V-points
 Hout(idpthW) == F       ! z_w                time-varying depths of W-points
 
-Hout(idUsms) == F       ! sustr              surface U-stress
-Hout(idVsms) == F       ! svstr              surface V-stress
+Hout(idUsms) == T       ! sustr              surface U-stress
+Hout(idVsms) == T       ! svstr              surface V-stress
 Hout(idUbms) == F       ! bustr              bottom U-stress
 Hout(idVbms) == F       ! bvstr              bottom V-stress
 
@@ -910,15 +910,15 @@ Dout(iTvdif) == T T     ! temp_vdiff, ...    vertical diffusion
 
      DAINAME == roms_dai.nc
      GSTNAME == roms_gst.nc
-     RSTNAME == ROMS_out/roms_rst.nc
-     HISNAME == ROMS_out/roms_his.nc
+     RSTNAME == ROMS_out/TransWind/roms_rst.nc
+     HISNAME == ROMS_out/TransWind/roms_his.nc
      QCKNAME == roms_qck.nc
      TLMNAME == roms_tlm.nc
      TLFNAME == roms_tlf.nc
      ADJNAME == roms_adj.nc
-     AVGNAME == ROMS_out/roms_avg.nc
+     AVGNAME == ROMS_out/TransWind/roms_avg.nc
      HARNAME == roms_har.nc
-     DIANAME == ROMS_out/roms_dia.nc
+     DIANAME == ROMS_out/TransWind/roms_dia.nc
      STANAME == roms_sta.nc
      FLTNAME == roms_flt.nc
 

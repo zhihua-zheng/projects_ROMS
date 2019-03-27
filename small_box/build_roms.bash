@@ -149,7 +149,7 @@ export     MY_PROJECT_DIR=${MY_ROOT_DIR}/projects_ROMS/small_box
 
 #export      MY_CPP_FLAGS="${MY_CPP_FLAGS} -D"
 
-export       MY_CPP_FLAGS="${MY_CPP_FLAGS} -DTRANSITION_WIND"
+#export       MY_CPP_FLAGS="${MY_CPP_FLAGS} -DTRANSITION_WIND"
 
 #--------------------------------------------------------------------------
 # Compiler options.
