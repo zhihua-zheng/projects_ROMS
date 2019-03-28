@@ -3,6 +3,8 @@
 % Script to create initial conditions for the ROMS small box test case
 % Zhihua Zheng, UW-APL, Mar. 5 2019
 
+clear
+
 %% 
 
 show_fig = 0; % turn on/off figure section
@@ -10,9 +12,12 @@ show_fig = 0; % turn on/off figure section
 %  Set input/output NetCDF files.
 my_root = '~/Documents/GitHub/Rutgers_ROMS/projects_ROMS/small_box';
 
-GRDname     = fullfile(my_root, 'Data/grid', 'uniform_grid_50m.nc');
-CLname      = fullfile(my_root, 'Data/CL',   'ocsp_cl_1995_2017.mat');
-LES_INIname = fullfile(my_root, 'Data/SS1D/nps10f192', 'nps10f192MYinit.dat');
+GRDname      = fullfile(my_root,'Data/grid','uniform_grid_50m.nc');
+CLname       = fullfile(my_root,'Data/CL',  'ocsp_cl_1995_2017.mat');
+LES_INIname  = fullfile(my_root,'Data/SS1D/nps10f192','nps10f192MYinit.dat');
+LES_STKname  = fullfile(my_root,'Data/SS1D/nps10f192','nps10f192_my_stksdf.dat');
+LES_SDIRname = fullfile(my_root,'Data/SS1D/nps10f192','nps10f192_my_sdirad.dat');
+
 %INIname     = fullfile(my_root, 'small_box_ini.nc');
 INIname     = 'small_box_ini.nc';
 
@@ -174,19 +179,56 @@ z_rho = set_depth(S.Vtransform, S.Vstretching,                          ...
 load(CLname)
 icdata = load(LES_INIname);
 
-z_ic=icdata(:,1);
-n = length(z_ic);
-t_ic=icdata(:,2);
-s_ic=icdata(:,3);
-% u_ic=icdata(:,4);
-% v_ic=icdata(:,5);
-% q2_ic=icdata(:,6);
-% q2l_ic=icdata(:,7);
+% Note the LES initial velocity includes Stokes drift, the coordinate
+% system is directly reversed from atmospheric boundary layer LES, and
+% LES wind is imposed towards North
 
-%% Extend LES initial profiles
+z_ic = icdata(:,1);
+t_ic = icdata(:,2);
+s_ic = icdata(:,3);
+u_ic = icdata(:,4);  % [m/s]
+v_ic = icdata(:,5);
+% q2_ic  = icdata(:,6);
+% q2l_ic = icdata(:,7);
+
+n = length(z_ic);
+
+%% Stokes drift profile in LES intial condition
+
+st_data = load(LES_STKname);
+st_dir  = load(LES_SDIRname);
+
+f_ctr  = st_data(1,2:end); % frequencies
+stksdf = st_data(2,2:end); % Stokes spectrum, dU_st
+sdirad = st_dir(2,2:end); % Stokes drift direction
+
+% the x, y Stokes components in LES
+du_st = stksdf .* sin(sdirad);
+dv_st = stksdf .* cos(sdirad);
+
+% get the Stokes drift profile
+g       = 9.81;
+k_ctr   = (2*pi*f_ctr).^2/g;
+z_decay = exp(-2*z_ic*k_ctr);
+u_st    = z_decay*du_st';
+v_st    = z_decay*dv_st';
+
+% subtract the Stokes drift from total velocity in LES
+u_ic = u_ic - u_st;
+v_ic = v_ic - v_st;
+
+% velocity conversion, the wind is imposed towards East in ROMS
+%   u_roms = v_LES = - v_ic
+% - v_roms = u_LES =   u_ic
+u_roms = -v_ic;
+v_roms = -u_ic;
+
+
+
+%% Extend LES initial profiles into depth
 
 temp_cl_z = center_diff(temp_cl,z,2); % gradient towards bottom
-sal_cl_z = center_diff(sal_cl,z,2); % gradient towards bottom
+sal_cl_z  = center_diff(sal_cl,z,2); % gradient towards bottom
 z_mid = (z(1:end-1) + z(2:end))/2;
 
 z_cutoff = z_ic(end);
@@ -201,6 +243,11 @@ s_z = [ones(1,n-1)*NaN s_z_cutoff sal_cl_z(i_start:end)]';
 z_new = [z_ic; z_mid(i_start:end)'];
 t_new = zeros(size(z_new));
 s_new = zeros(size(z_new));
+u_new = zeros(size(z_new));
+v_new = zeros(size(z_new));
+
+u_new(1:n) = u_roms;
+v_new(1:n) = v_roms;
 t_new(1:n) = t_ic;
 s_new(1:n) = s_ic;
 
@@ -213,56 +260,20 @@ s_new(n:end) = s_ic(end) + s_deep;
 %% Display
 
 if show_fig
-
-figure('position', [0, 0, 400, 700])
-scatter(t_ic,z_ic,25,'filled'); axis ij
-hold on 
-plot(t_new,z_new,'Linewidth',2)
-hold off 
-box on
-export_fig('./figs/temp','-png','-transparent','-painters')
-
-figure('position', [0, 0, 400, 700])
-scatter(s_ic,z_ic,15,'filled'); axis ij
-hold on 
-plot(s_new,z_new,'Linewidth',2)
-hold off 
-box on
-export_fig('./figs/sal','-png','-transparent','-painters')
-
-%----- Gradient
-t_new_z = -center_diff(t_new,z_new,1); % dT/dz
-s_new_z = -center_diff(s_new,z_new,1); % dS/dz
-z_mid_new = (z_new(1:end-1) + z_new(2:end))/2;
-
-t_ic_z = -center_diff(t_ic,z_ic,1); % dT/dz in original profile
-s_ic_z = -center_diff(s_ic,z_ic,1); % dS/dz in original profile
-z_mid_ic = (z_ic(1:end-1) + z_ic(2:end))/2;
-
-figure('position', [0, 0, 400, 700])
-line(s_new_z,z_mid_new,'Linewidth',1.8,'Color',rgb('vermillion')) 
-line(t_new_z,z_mid_new,'Linewidth',1.8,'Color',rgb('soft blue'))
-line([0 0],[0 4500],'Color',[.3 .3 .3],'LineStyle','--','Linewidth',1)
-hold on
-scatter(s_ic_z,z_mid_ic,7,'filled','ks')
-hold on
-scatter(t_ic_z,z_mid_ic,7,'filled','ks')
-axis ij
-box on
-legend({'$dS/dz$','$dT/dz$'},'Interpreter','latex','fontsize',20,...
-    'Location','best','color','none')
-export_fig('./figs/ts_gradient','-png','-transparent','-painters')
-%----- Gradient
-
+    extend_ts_exam;
 end
 
-%% Interpolate the profiles to ROMS-z level
+%% Interpolate profiles to ROMS-z level
 
 for i = 1:Lr
     for j = 1:Mr
         
         S.temp(i,j,:) = interp1(-z_new,t_new,z_rho(i,j,:));
-        S.salt(i,j,:) = interp1(-z_new,s_new,z_rho(i,j,:));
+        S.salt(i,j,:) = interp1(-z_new,s_new,z_rho(i,j,:));   
+        S.ubar(i,j)   = trapz(-z_new,u_new) / S.h;
+        S.vbar(i,j)   = trapz(-z_new,v_new) / S.h;
+        S.u(i,j,:)    = interp1(-z_new,u_new,z_rho(i,j,:));
+        S.v(i,j,:)    = interp1(-z_new,v_new,z_rho(i,j,:));
     end
 end
 
@@ -281,5 +292,3 @@ S.ocean_time = 30.0*86400;                % initial conditions time (s)
 [~]=nc_write(INIname, 'v',    S.v,    IniRec);
 [~]=nc_write(INIname, 'temp', S.temp, IniRec);
 [~]=nc_write(INIname, 'salt', S.salt, IniRec);
-
-
