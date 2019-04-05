@@ -17,8 +17,7 @@ CLname       = fullfile(my_root,'Data/CL',  'ocsp_cl_1995_2017.mat');
 LES_INIname  = fullfile(my_root,'Data/SS1D/nps10f192','nps10f192MYinit.dat');
 LES_STKname  = fullfile(my_root,'Data/SS1D/nps10f192','nps10f192_my_stksdf.dat');
 LES_SDIRname = fullfile(my_root,'Data/SS1D/nps10f192','nps10f192_my_sdirad.dat');
-
-%INIname     = fullfile(my_root, 'small_box_ini.nc');
+% INIname      = fullfile(my_root,'ROMS_in','small_box_ini.nc');
 INIname     = 'small_box_ini.nc';
 
 %% Box configuration
@@ -113,8 +112,8 @@ S.h = nc_read(GRDname, 'h');
 %  Set zero initial conditions.
 %--------------------------------------------------------------------------
 
-Lr = S.Lm+2;   Lu = Lr-1;   Lv = Lr; % X-direction
-Mr = S.Mm+2;   Mu = Mr;     Mv = Mr-1; % Y-direction
+Lr = S.Lm+2;   Lu = Lr-1;   Lv = Lr; % X-direction [\xi]
+Mr = S.Mm+2;   Mu = Mr;     Mv = Mr-1; % Y-direction [\eta]
 
 S.zeta = zeros([Lr Mr]);
 S.ubar = zeros([Lu Mu]);
@@ -180,8 +179,8 @@ load(CLname)
 icdata = load(LES_INIname);
 
 % Note the LES initial velocity includes Stokes drift, the coordinate
-% system is directly reversed from atmospheric boundary layer LES, and
-% LES wind is imposed towards North
+% system is directly reversed from atmospheric boundary layer LES model,
+% and LES wind is imposed towards North
 
 z_ic = icdata(:,1);
 t_ic = icdata(:,2);
@@ -191,7 +190,8 @@ v_ic = icdata(:,5);
 % q2_ic  = icdata(:,6);
 % q2l_ic = icdata(:,7);
 
-n = length(z_ic);
+n      = length(z_ic);
+dz_LES = 1.42; % see HD2008
 
 %% Stokes drift profile in LES intial condition
 
@@ -207,23 +207,28 @@ du_st = stksdf .* sin(sdirad);
 dv_st = stksdf .* cos(sdirad);
 
 % get the Stokes drift profile
-g       = 9.81;
-k_ctr   = (2*pi*f_ctr).^2/g;
-z_decay = exp(-2*z_ic*k_ctr);
-u_st    = z_decay*du_st';
-v_st    = z_decay*dv_st';
+g         = 9.81;
+k_ctr     = (2*pi*f_ctr).^2/g;
 
-% subtract the Stokes drift from total velocity in LES
-u_ic = u_ic - u_st;
-v_ic = v_ic - v_st;
+% multiplier produced by spatial filter of exp(2kz)
+filter_m  = sinh(k_ctr*dz_LES) ./ (k_ctr*dz_LES);
+
+z_decay_u = exp(-2*z_ic*k_ctr);
+z_decay_v = exp(-2*z_ic*k_ctr);
+u_st      = z_decay_u*(du_st .* filter_m)';
+v_st      = z_decay_v*(dv_st .* filter_m)';
+% Wave's direction are in usual coordinate
 
 % velocity conversion, the wind is imposed towards East in ROMS
-%   u_roms = v_LES = - v_ic
-% - v_roms = u_LES =   u_ic
-u_roms = -v_ic;
-v_roms = -u_ic;
+%   u_roms = v_LES = - v_ic - v_st
+% - v_roms = u_LES =   u_ic - u_st
 
+% subtract the Stokes drift from total velocity & adjust y-axis in LES
+u_LES  =  u_ic - u_st;
+v_LES  = -v_ic - v_st;
 
+u_roms =  v_LES;
+v_roms = -u_LES;
 
 %% Extend LES initial profiles into depth
 
@@ -270,9 +275,21 @@ for i = 1:Lr
         
         S.temp(i,j,:) = interp1(-z_new,t_new,z_rho(i,j,:));
         S.salt(i,j,:) = interp1(-z_new,s_new,z_rho(i,j,:));   
-        S.ubar(i,j)   = trapz(-z_new,u_new) / S.h;
-        S.vbar(i,j)   = trapz(-z_new,v_new) / S.h;
+    end
+end
+
+for i = 1:Lu
+    for j = 1:Mu
+        
+        S.ubar(i,j)   = trapz(-z_new,u_new) / S.h(i,j);
         S.u(i,j,:)    = interp1(-z_new,u_new,z_rho(i,j,:));
+    end
+end
+
+for i = 1:Lv
+    for j = 1:Mv
+        
+        S.vbar(i,j)   = trapz(-z_new,v_new) / S.h(i,j);
         S.v(i,j,:)    = interp1(-z_new,v_new,z_rho(i,j,:));
     end
 end
