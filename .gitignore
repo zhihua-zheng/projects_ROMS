@@ -19,7 +19,10 @@
 /*/Build_roms/
 *.log
 *~
+
+# Ignore OS metadata files
 *.DS_Store
+*._*
 
 # Ignore excuetable files
 romsM
