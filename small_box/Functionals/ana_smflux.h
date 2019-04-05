@@ -131,9 +131,9 @@
 #if defined SMALL_BOX
 # ifdef TRANSITION_WIND
       IF ((tdays(ng)-dstart).le.4.0_r8) THEN
-        windamp=0.05_r8*(1.0_r8+SIN(pi*(tdays(ng)-dstart-2.0_r8)/4.0_r8))/rho0
+        windamp=0.8658_r8*(1.0_r8+SIN(pi*(tdays(ng)-dstart-2.0_r8)/4.0_r8))/rho0
       ELSE
-        windamp=0.1_r8/rho0
+        windamp=1.731507_r8/rho0
       END IF
       DO j=JstrT,JendT
         DO i=IstrP,IendT
@@ -146,9 +146,9 @@
 # else
       DO j=JstrT,JendT
         DO i=IstrP,IendT
-          sustr(i,j)=0.1_r8/rho0
+          sustr(i,j)=1.731507_r8/rho0
 #  ifdef TL_IOMS
-          tl_sustr(i,j)=0.1_r8/rho0
+          tl_sustr(i,j)=1.731507_r8/rho0
 #  endif
         END DO
       END DO
@@ -156,9 +156,9 @@
 #else
       DO j=JstrT,JendT
         DO i=IstrP,IendT
-          sustr(i,j)=0.0_r8
+          sustr(i,j)=0.0_r8/rho0
 # ifdef TL_IOMS
-          tl_sustr(i,j)=0.1_r8/rho0
+          tl_sustr(i,j)=0.0_r8/rho0
 # endif	  
         END DO
       END DO
@@ -173,16 +173,19 @@
 #if defined SMALL_BOX
       DO j=JstrP,JendT
         DO i=IstrT,IendT
-          svstr(i,j)=0.0_r8
+          svstr(i,j)=0.0_r8/rho0
 # ifdef TL_IOMS
-          tl_sustr(i,j)=0.0_r8
+          tl_sustr(i,j)=0.0_r8/rho0
 # endif
         END DO
       END DO
 #else
       DO j=JstrP,JendT
         DO i=IstrT,IendT
-          svstr(i,j)=0.0_r8
+          svstr(i,j)=0.0_r8/rho0
+# ifdef TL_IOMS
+          tl_svstr(i,j)=0.0_r8/rho0
+# endif
         END DO
       END DO
       ana_smflux.h: no values provided for svstr.

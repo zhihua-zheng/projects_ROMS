@@ -88,18 +88,18 @@ vbar_end = vbar(:,:,end);
 ubar_a = squeeze(ubar(3,3,:));
 vbar_a = squeeze(vbar(3,3,:));
 
-% ubar_a = squeeze(u(3,3,end,:));
-% vbar_a = squeeze(v(3,3,end,:));
+u_surf = squeeze(u(3,3,end,:));
+v_surf = squeeze(v(3,3,end,:));
 
-u_Hov = squeeze(squeeze(u(1,1,:,:)));
-v_Hov = squeeze(squeeze(v(1,1,:,:)));
-temp_Hov = squeeze(squeeze(temp(1,1,:,:)));
-salt_Hov = squeeze(squeeze(salt(1,1,:,:)));
+u_Hov = squeeze(squeeze(u(3,3,:,:)));
+v_Hov = squeeze(squeeze(v(3,3,:,:)));
+temp_Hov = squeeze(squeeze(temp(3,3,:,:)));
+salt_Hov = squeeze(squeeze(salt(3,3,:,:)));
 
-AKt_Hov = squeeze(squeeze(AKt(1,1,:,:)));
-AKv_Hov = squeeze(squeeze(AKv(1,1,:,:)));
-tke_Hov = squeeze(squeeze(tke(1,1,:,:)));
-gls_Hov = squeeze(squeeze(gls(1,1,:,:)));
+AKt_Hov = squeeze(squeeze(AKt(3,3,:,:)));
+AKv_Hov = squeeze(squeeze(AKv(3,3,:,:)));
+tke_Hov = squeeze(squeeze(tke(3,3,:,:)));
+gls_Hov = squeeze(squeeze(gls(3,3,:,:)));
 
 %% T-profile
 
